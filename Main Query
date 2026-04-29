@@ -1,0 +1,76 @@
+/*
+Main analytics query
+*/
+
+-- Step 1: Base info + transaction volume
+DROP TABLE IF EXISTS #customer_info;
+
+SELECT 
+    c.CustomerId,
+    c.Email,
+    CONCAT(c.FirstName, ' ', c.LastName) AS FullName,
+    c.CompanyName,
+    p.ProgramName,
+    c.Country,
+    o.AccountOwnerName,
+    SUM(CASE WHEN t.Status = 'Completed' THEN t.AmountUSD ELSE 0 END) AS TotalVolume
+INTO #customer_info
+FROM Customers c
+LEFT JOIN Programs p ON c.ProgramId = p.ProgramId
+LEFT JOIN AccountOwners o ON c.OwnerId = o.OwnerId
+LEFT JOIN Transactions t ON t.CustomerId = c.CustomerId
+GROUP BY 
+    c.CustomerId, c.Email, c.FirstName, c.LastName,
+    c.CompanyName, p.ProgramName, c.Country, o.AccountOwnerName;
+
+
+-- Step 2: Customer types
+DROP TABLE IF EXISTS #customer_type;
+
+SELECT 
+    cc.CustomerId,
+    STRING_AGG(ct.TypeName, ', ') AS CustomerType
+INTO #customer_type
+FROM #customer_info ci
+LEFT JOIN CustomerCategories cc ON cc.CustomerId = ci.CustomerId
+LEFT JOIN CategoryTypes ct ON ct.CategoryTypeId = cc.CategoryTypeId
+GROUP BY cc.CustomerId;
+
+
+-- Step 3: License info
+DROP TABLE IF EXISTS #license;
+
+SELECT 
+    CustomerId,
+    LicenseType,
+    Country AS LicenseCountry
+INTO #license
+FROM CustomerRegulations;
+
+
+-- Step 4: Balance with FX conversion
+DROP TABLE IF EXISTS #balance;
+
+SELECT 
+    ci.CustomerId,
+    CAST(SUM(ISNULL(b.Balance,0) * ISNULL(fx.Rate,1)) AS DECIMAL(18,2)) AS BalanceUSD
+INTO #balance
+FROM #customer_info ci
+LEFT JOIN AccountBalances b ON b.CustomerId = ci.CustomerId
+LEFT JOIN FXRates fx 
+    ON b.Currency = fx.Currency
+    AND fx.BaseCurrency = 'USD'
+GROUP BY ci.CustomerId;
+
+
+-- Final output
+SELECT 
+    ci.*,
+    b.BalanceUSD,
+    ct.CustomerType,
+    l.LicenseType,
+    l.LicenseCountry
+FROM #customer_info ci
+LEFT JOIN #balance b ON b.CustomerId = ci.CustomerId
+LEFT JOIN #customer_type ct ON ct.CustomerId = ci.CustomerId
+LEFT JOIN #license l ON l.CustomerId = ci.CustomerId;
