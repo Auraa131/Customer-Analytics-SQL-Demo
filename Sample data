@@ -1,0 +1,41 @@
+/*
+Sample data (fake, safe)
+*/
+
+INSERT INTO Customers VALUES
+(1, 'user1@example.com', 'John', 'Doe', 'Acme Ltd', 'USA', 1, 1),
+(2, 'user2@example.com', 'Jane', 'Smith', 'Beta Inc', 'UK', 2, 2);
+
+INSERT INTO Programs VALUES
+(1, 'Standard'),
+(2, 'Premium');
+
+INSERT INTO AccountOwners VALUES
+(1, 'Alice Johnson'),
+(2, 'Bob Lee');
+
+INSERT INTO Transactions VALUES
+(1, 1, 100.00, 'Completed'),
+(2, 1, 50.00, 'Pending'),
+(3, 2, 200.00, 'Completed');
+
+INSERT INTO CategoryTypes VALUES
+(1, 'Retail'),
+(2, 'Enterprise');
+
+INSERT INTO CustomerCategories VALUES
+(1, 1),
+(1, 2),
+(2, 2);
+
+INSERT INTO CustomerRegulations VALUES
+(1, 'Type A', 'USA'),
+(2, 'Type B', 'UK');
+
+INSERT INTO AccountBalances VALUES
+(1, 500.00, 'USD'),
+(2, 300.00, 'EUR');
+
+INSERT INTO FXRates VALUES
+('USD', 'USD', 1),
+('EUR', 'USD', 1.1);
