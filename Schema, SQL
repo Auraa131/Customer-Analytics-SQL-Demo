@@ -1,0 +1,69 @@
+/*
+Schema: Customer Analytics Demo
+Safe, generic structure for learning purposes
+*/
+
+DROP TABLE IF EXISTS Customers;
+CREATE TABLE Customers (
+    CustomerId INT PRIMARY KEY,
+    Email VARCHAR(100),
+    FirstName VARCHAR(50),
+    LastName VARCHAR(50),
+    CompanyName VARCHAR(100),
+    Country VARCHAR(50),
+    ProgramId INT,
+    OwnerId INT
+);
+
+DROP TABLE IF EXISTS Programs;
+CREATE TABLE Programs (
+    ProgramId INT PRIMARY KEY,
+    ProgramName VARCHAR(100)
+);
+
+DROP TABLE IF EXISTS AccountOwners;
+CREATE TABLE AccountOwners (
+    OwnerId INT PRIMARY KEY,
+    AccountOwnerName VARCHAR(100)
+);
+
+DROP TABLE IF EXISTS Transactions;
+CREATE TABLE Transactions (
+    TransactionId INT PRIMARY KEY,
+    CustomerId INT,
+    AmountUSD DECIMAL(18,2),
+    Status VARCHAR(20)
+);
+
+DROP TABLE IF EXISTS CustomerCategories;
+CREATE TABLE CustomerCategories (
+    CustomerId INT,
+    CategoryTypeId INT
+);
+
+DROP TABLE IF EXISTS CategoryTypes;
+CREATE TABLE CategoryTypes (
+    CategoryTypeId INT PRIMARY KEY,
+    TypeName VARCHAR(50)
+);
+
+DROP TABLE IF EXISTS CustomerRegulations;
+CREATE TABLE CustomerRegulations (
+    CustomerId INT,
+    LicenseType VARCHAR(50),
+    Country VARCHAR(50)
+);
+
+DROP TABLE IF EXISTS AccountBalances;
+CREATE TABLE AccountBalances (
+    CustomerId INT,
+    Balance DECIMAL(18,2),
+    Currency VARCHAR(10)
+);
+
+DROP TABLE IF EXISTS FXRates;
+CREATE TABLE FXRates (
+    Currency VARCHAR(10),
+    BaseCurrency VARCHAR(10),
+    Rate DECIMAL(18,6)
+);
